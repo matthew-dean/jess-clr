@@ -1,5 +1,5 @@
 // ESM syntax is supported.
-import {set as lset, has, merge} from 'lodash'
+import {set as lset, get, has, merge} from 'lodash'
 
 class Node {
   constructor(ident, map) {
@@ -17,21 +17,25 @@ const set = (obj, path, value) => {
   }
 }
 
-class StyleScope {
+export class StyleScope {
   constructor() {
     this.refs = {}
     this.root = this
     this.tree = []
-    this.functions = {}
     this.path = []
   }
 
   set(path, value, root) {
+    if(typeof path === 'string') {
+      path = [path]
+    }
     if (root) {
       set(this.root, ['refs'].concat(path), value)
     } else {
       set(this.refs, path, value)
-      set(this.root, ['refs'].concat(this.path).concat(path), value)
+      if (this.parent) {
+        set(this.root, ['refs'].concat(this.path).concat(path), value)
+      }
     }
   }
 
@@ -56,23 +60,24 @@ class StyleScope {
         super()
         this.parent = $
         this.path = path
+        this.tree = []
         const parentConfig = get(this.parent, 'config')
         this.config = {...parentConfig}
       }
     }
   }
 
-  rule(node, func) {
-    const scope = addScope(this)
+  rules(node, func) {
+    const scope = this.addScope(this)
     this.tree.push([node, func.bind(scope)])
   }
 
-  decl(node) {
+  declaration(node) {
     this.tree.push(node)
   }
 
   function(path, args, func, condition) {
-    const scope = addScope(this, path)
+    const scope = this.addScope(this, [path])
     this.set(path, [func, scope, args, condition])
   }
 
@@ -84,9 +89,19 @@ class StyleScope {
    */
   call(path, args) {
     const val = this._get(path)
+    console.log(val)
     val.forEach(funcDef => {
       const $ = funcDef[1]
       $.set(path)
+    })
+  }
+
+  eval(tree = this.tree) {
+    tree.forEach(node => {
+      if (typeof node[1] === 'function') {
+        node[1]()
+        // todo
+      }
     })
   }
 }
