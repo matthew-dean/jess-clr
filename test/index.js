@@ -24,5 +24,6 @@ const styles = config => {
 }
 
 let $ = new jessCLR.StyleScope()
-
-console.log(styles({$}))
+styles({$})
+$.eval()
+console.log($)
