@@ -98,6 +98,14 @@ export class StyleScope {
     this.tree.push(node)
   }
 
+  /**
+   * Add function to scope
+   *
+   * @param {*} path function name in form of a path (array or string)
+   * @param {*} args default args / values for function
+   * @param {*} func actual function to execute when called
+   * @param {*} condition condition to evaluate before calling this function (Less)
+   */
   function(path, args, func, condition) {
     const scope = this.addScope(this, [path])
     this.addStatement(() => {
@@ -114,6 +122,7 @@ export class StyleScope {
   call(path, args) {
     this.addStatement(() => {
       const val = this._get(path)
+      console.log(path, val)
       val.forEach(funcDef => {
         // const $ = funcDef[1]
         // $.set(path)
