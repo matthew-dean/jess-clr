@@ -38,3 +38,6 @@ import { __add, __color } from 'jess/runtime'
 Maybe variables can be reactive / stateful?
 Such that changes to variables can be tracked into which functions need to be re-executed based on dependencies,
 which would then patch only certain sections of the CSS.
+
+The Jess runtime should be written in AssemblyScript, such that for in-browser use,
+the common language output could also be pre-compiled into WASM. (Is this tree-shakeable?)
