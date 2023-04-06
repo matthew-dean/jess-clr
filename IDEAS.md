@@ -18,7 +18,7 @@ import { __add, __color } from 'jess/runtime'
  * _S = scope variable
  */
 [
-  _S => $(['.selector'], null, _S => [
+  _S => _S(['.selector'], null, _S => [
     // Doesn't look up anything
     _S`property``value`,
     // Looks up a value
@@ -41,3 +41,35 @@ which would then patch only certain sections of the CSS.
 
 The Jess runtime should be written in AssemblyScript, such that for in-browser use,
 the common language output could also be pre-compiled into WASM. (Is this tree-shakeable?)
+
+
+End result:
+```less
+// Call Sass+ from Less+
+
+// mixin.scss
+@mixin sass-mixin() {
+  .foo {
+    bar: value;
+  }
+}
+
+// main.less
+@import "mixin.scss";
+.sass-mixin();
+```
+
+```less
+// Call Less+ from Sass+
+
+// mixin.less
+.sass-mixin() {
+  .foo {
+    bar: value;
+  }
+}
+
+// main.scss
+@import "mixin.less";
+@include sass-mixin();
+```
